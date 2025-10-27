@@ -1,0 +1,16 @@
+{
+  "name": "product-management-system",
+  "version": "1.0.0",
+  "description": "产品管理系统",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static build completed'",
+    "start": "python -m http.server 3000 || npx serve ."
+  },
+  "keywords": ["product", "management"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
