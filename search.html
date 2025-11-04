@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>搜索 - 数址</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        accent: '#722ED1',
+                        neutral: '#F5F7FA',
+                        'neutral-dark': '#86909C',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                    },
+                    fontFamily: {
+                        sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 2px 14px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 6px 20px 0 rgba(0, 0, 0, 0.1)',
+                    }
+                },
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+        .tab-active {
+            color: #165DFF;
+            border-bottom-color: #165DFF;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-neutral font-sans text-gray-800">
+    <div class="h-screen flex flex-col">
+        <!-- 顶部搜索栏 -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div class="px-4 py-3 flex items-center gap-3">
+                <!-- 返回按钮 -->
+                <button id="back-btn" class="text-gray-600 hover:text-primary transition-colors">
+                    <i class="fa fa-arrow-left text-xl"></i>
+                </button>
+
+                <!-- 搜索框 -->
+                <div class="flex-1 relative">
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="搜索门店、铺位、品牌、人脉..."
+                        class="w-full py-2.5 px-4 pr-12 rounded-xl bg-neutral focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all text-base">
+                    <button id="search-btn" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-primary hover:text-primary-dark transition-colors px-3 py-1.5 font-medium">
+                        搜索
+                    </button>
+                </div>
+            </div>
+
+            <!-- 标签页导航 -->
+            <div class="flex items-center border-b border-gray-100 bg-white relative overflow-x-auto scrollbar-hide">
+                <button class="search-tab px-4 py-3 text-gray-600 font-medium border-b-2 border-transparent hover:text-primary transition-colors tab-active whitespace-nowrap" data-tab="stores">
+                    门店
+                </button>
+                <button class="search-tab px-4 py-3 text-gray-600 font-medium border-b-2 border-transparent hover:text-primary transition-colors whitespace-nowrap" data-tab="spaces">
+                    铺位
+                </button>
+                <button class="search-tab px-4 py-3 text-gray-600 font-medium border-b-2 border-transparent hover:text-primary transition-colors whitespace-nowrap" data-tab="brands">
+                    品牌
+                </button>
+                <button class="search-tab px-4 py-3 text-gray-600 font-medium border-b-2 border-transparent hover:text-primary transition-colors whitespace-nowrap" data-tab="contacts">
+                    人脉
+                </button>
+            </div>
+        </header>
+
+        <!-- 搜索结果提示 -->
+        <div class="bg-white px-4 py-2 border-b border-gray-100">
+            <p class="text-sm text-gray-500">搜索结果 <span id="result-count" class="text-primary font-medium">0</span> 条</p>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- 门店标签页内容 -->
+            <div id="stores-content" class="tab-content p-4">
+                <!-- 筛选和排序 -->
+                
+
+                <!-- 门店列表 -->
+                <div class="space-y-3">
+                    <!-- 门店项1 -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">海底捞火锅店</h4>
+                                <p class="text-sm text-gray-500 mt-1">新加坡乌节路345号</p>
+                            </div>
+                            <span class="text-sm text-primary">4.8分</span>
+                        </div>
+                    </div>
+
+                    <!-- 门店项2 -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">喜茶奶茶店</h4>
+                                <p class="text-sm text-gray-500 mt-1">吉隆坡武吉免登购物中心</p>
+                            </div>
+                            <span class="text-sm text-primary">4.6分</span>
+                        </div>
+                    </div>
+
+                    <!-- 门店项3 -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">北京烤鸭店</h4>
+                                <p class="text-sm text-gray-500 mt-1">曼谷暹罗天地3楼</p>
+                            </div>
+                            <span class="text-sm text-primary">4.7分</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加载更多 -->
+                <div class="text-center mt-6">
+                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-6 rounded-lg transition-colors">
+                        加载更多门店
+                    </button>
+                </div>
+            </div>
+
+            <!-- 铺位标签页内容 -->
+            <div id="spaces-content" class="tab-content p-4 hidden">
+               
+
+                <!-- 铺位列表 -->
+                <div class="space-y-3">
+                    <!-- 铺位项1 -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">乌节路黄金商铺</h4>
+                                <p class="text-sm text-gray-500 mt-1">新加坡乌节路购物区 · 120㎡</p>
+                            </div>
+                            <span class="text-sm text-primary">¥18,000/月</span>
+                        </div>
+                    </div>
+
+                    <!-- 铺位项2 -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">武吉免登商场铺位</h4>
+                                <p class="text-sm text-gray-500 mt-1">吉隆坡武吉免登广场 · 85㎡</p>
+                            </div>
+                            <span class="text-sm text-primary">¥12,000/月</span>
+                        </div>
+                    </div>
+
+                    <!-- 铺位项3 -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium text-gray-800">胡志明市中心商铺</h4>
+                                <p class="text-sm text-gray-500 mt-1">胡志明市第一郡商业街 · 200㎡</p>
+                            </div>
+                            <span class="text-sm text-primary">¥8,500/月</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加载更多 -->
+                <div class="text-center mt-6">
+                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-6 rounded-lg transition-colors">
+                        加载更多铺位
+                    </button>
+                </div>
+            </div>
+
+            <!-- 品牌标签页内容 -->
+            <div id="brands-content" class="tab-content p-4 hidden">
+          
+                <!-- 品牌列表 -->
+                <div class="space-y-3">
+                    <!-- 品牌1 -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-base">罗塞塔咖啡馆</h4>
+                                <p class="text-sm text-gray-500 mt-1">印度尼西亚</p>
+                                <p class="text-xs text-gray-400 mt-1">1门店数</p>
+                            </div>
+                            <span class="bg-blue-50 text-primary px-2 py-0.5 rounded-md text-sm">咖啡</span>
+                        </div>
+                    </div>
+
+                    <!-- 品牌2 -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-base">洛拉精酿啤酒馆</h4>
+                                <p class="text-sm text-gray-500 mt-1">印度尼西亚</p>
+                                <p class="text-xs text-gray-400 mt-1">1门店数</p>
+                            </div>
+                            <span class="bg-blue-50 text-primary px-2 py-0.5 rounded-md text-sm">非中式正餐</span>
+                        </div>
+                    </div>
+
+                    <!-- 品牌3 -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-base">泰式风情圣纳</h4>
+                                <p class="text-sm text-gray-500 mt-1">印度尼西亚</p>
+                                <p class="text-xs text-gray-400 mt-1">1门店数</p>
+                            </div>
+                            <span class="bg-blue-50 text-primary px-2 py-0.5 rounded-md text-sm">非中式正餐</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加载更多 -->
+                <div class="text-center mt-6">
+                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-6 rounded-lg transition-colors">
+                        加载更多品牌
+                    </button>
+                </div>
+            </div>
+
+            <!-- 人脉标签页内容 -->
+            <div id="contacts-content" class="tab-content p-4 hidden">
+      
+
+    
+
+                <!-- 人脉列表 -->
+                <div class="space-y-4">
+                    <!-- 人脉1 -->
+                    <div class="bg-white rounded-xl shadow-card overflow-hidden hover:shadow-card-hover transition-shadow">
+                        <div class="p-4">
+                            <div class="flex">
+                                <img src="https://picsum.photos/120/120?random=71" alt="陈永辉" class="w-20 h-20 rounded-lg object-cover">
+                                <div class="ml-3 flex-1">
+                                    <h4 class="font-medium">陈永辉</h4>
+                                    <div class="mt-1">
+                                        <p class="text-xs text-neutral-dark flex items-center mb-1">
+                                            <i class="fa fa-tags mr-1 text-gray-400"></i>
+                                            需求：<span class="text-gray-700 ml-1">寻找合作伙伴</span>
+                                        </p>
+                                        <p class="text-xs text-neutral-dark flex items-center mb-1">
+                                            <i class="fa fa-map-marker mr-1 text-gray-400"></i>
+                                            来自：<span class="text-gray-700 ml-1">马来西亚</span>
+                                        </p>
+                                        <p class="text-xs text-neutral-dark flex items-center">
+                                            <i class="fa fa-user-o mr-1 text-gray-400"></i>
+                                            类型：<span class="text-gray-700 ml-1">行业从业人员</span>
+                                        </p>
+                                    </div>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">马来西亚餐饮协会主席</span>
+                                        <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">资源丰富</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary hover:text-primary/80 transition-colors">
+                                    <i class="fa fa-angle-right text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 人脉2 -->
+                    <div class="bg-white rounded-xl shadow-card overflow-hidden hover:shadow-card-hover transition-shadow">
+                        <div class="p-4">
+                            <div class="flex">
+                                <img src="https://picsum.photos/120/120?random=72" alt="王美华" class="w-20 h-20 rounded-lg object-cover">
+                                <div class="ml-3 flex-1">
+                                    <h4 class="font-medium">王美华</h4>
+                                    <div class="mt-1">
+                                        <p class="text-xs text-neutral-dark flex items-center mb-1">
+                                            <i class="fa fa-tags mr-1 text-gray-400"></i>
+                                            需求类型：<span class="text-gray-700 ml-1">出租商铺</span>
+                                        </p>
+                                        <p class="text-xs text-neutral-dark flex items-center mb-1">
+                                            <i class="fa fa-map-marker mr-1 text-gray-400"></i>
+                                            来自：<span class="text-gray-700 ml-1">新加坡</span>
+                                        </p>
+                                        <p class="text-xs text-neutral-dark flex items-center">
+                                            <i class="fa fa-building-o mr-1 text-gray-400"></i>
+                                            角色：<span class="text-gray-700 ml-1">商铺方</span>
+                                        </p>
+                                    </div>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">商业地产投资人</span>
+                                        <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">优质铺源</span>
+                                    </div>
+                                </div>
+                                <button class="text-primary hover:text-primary/80 transition-colors">
+                                    <i class="fa fa-angle-right text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加载更多 -->
+                <div class="text-center mt-6">
+                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-6 rounded-lg transition-colors">
+                        加载更多人脉
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchKeyword = urlParams.get('q') || '';
+
+        // 设置搜索框的值
+        if (searchKeyword) {
+            document.getElementById('search-input').value = searchKeyword;
+        }
+
+        // 标签页切换功能
+        const tabs = document.querySelectorAll('.search-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+
+                // 移除所有active类
+                tabs.forEach(t => t.classList.remove('tab-active'));
+                tabContents.forEach(content => content.classList.add('hidden'));
+
+                // 添加active类到当前标签
+                tab.classList.add('tab-active');
+                document.getElementById(targetTab + '-content').classList.remove('hidden');
+            });
+        });
+
+        // 返回按钮
+        document.getElementById('back-btn').addEventListener('click', () => {
+            window.history.back();
+        });
+
+        // 搜索按钮
+        document.getElementById('search-btn').addEventListener('click', () => {
+            const searchValue = document.getElementById('search-input').value;
+            console.log('搜索:', searchValue);
+            // 这里可以添加实际的搜索逻辑
+            // 更新URL参数
+            if (searchValue) {
+                const newUrl = window.location.pathname + '?q=' + encodeURIComponent(searchValue);
+                window.history.pushState({}, '', newUrl);
+            }
+        });
+
+        // 回车搜索
+        document.getElementById('search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('search-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
